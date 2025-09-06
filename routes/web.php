@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\File;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\UserController;
@@ -10,6 +11,16 @@ use App\Http\Controllers\ActivityLogController;
 Route::get('/sanctum/csrf-cookie', function () {
     return response()->json(['csrf' => csrf_token()]);
 });
+
+Route::get('/docs-api', function () {
+    $file = storage_path('api-docs/api-docs.json');
+    if (!File::exists($file)) {
+        abort(404);
+    }
+    return response()->file($file, [
+        'Content-Type' => 'application/json'
+    ]);
+})->name('l5-swagger.default.docs');
 
 Route::post('/login', [AuthController::class, 'login'])
     ->name('web.login');
